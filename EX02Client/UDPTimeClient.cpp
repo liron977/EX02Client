@@ -9,7 +9,8 @@ using namespace std;
 #include <string>
 #define TIME_PORT	27015
 
-
+void sendRequest(char(&sendBuff)[255],const SOCKET& connSocket, const sockaddr_in& server);
+void getResponse(const SOCKET& connSocket, char(&recvBuff)[255]);
 void displayMenuOptions()
 {
 	cout << "Please select an option (to exit press 0)" << endl;
@@ -37,10 +38,6 @@ void printCityMenu()
 	cout << "5. UTC" << endl;
 }
 void userInputCityMenu(char* outStr, int userCityInput) {
-	//if (userCityInput == 1) { // Doha
-	//   sprintf(outStr, "%s","GetTimeWithoutDateInCity1");
-	//}
-
 	switch (userCityInput)
 	{
 	case 1:
@@ -63,28 +60,8 @@ void userInputCityMenu(char* outStr, int userCityInput) {
 	}
 
 }
-	//	break;
-	//case 2: // Prague
-	//	GetTimeWithoutDateInCity2
-	//	break;
-	//case 3: // New York
-	//	GetTimeWithoutDateInCity3
-	//	break;
-	//case 4: // Berlin
-	//	GetTimeWithoutDateInCity4
-	//	break;
-	//case 5: // Universal
-	//	break;
-	//default:
-	//	break;
-	//}
-
-
-
 void main()
 {
-
-
 	WSAData wsaData;
 	if (NO_ERROR != WSAStartup(MAKEWORD(2, 2), &wsaData))
 	{
@@ -120,7 +97,7 @@ void main()
 		if (strcmp(selectedOption, "1") == 0)
 		{
 			strcpy(sendBuff, "GET_TIME");
-			bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+			/*bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 			if (SOCKET_ERROR == bytesSent)
 			{
 				cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
@@ -128,9 +105,10 @@ void main()
 				WSACleanup();
 				return;
 			}
-			cout << "Time Client: Sent: " << bytesSent << "/" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";
-
-			bytesRecv = recv(connSocket, recvBuff, 255, 0);
+			cout << "Time Client: Sent: " << bytesSent << "/" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";*/
+			sendRequest(sendBuff,connSocket, server);
+			getResponse(connSocket, recvBuff);
+			/*bytesRecv = recv(connSocket, recvBuff, 255, 0);
 			if (SOCKET_ERROR == bytesRecv)
 			{
 				cout << "Time Client: Error at recv(): " << WSAGetLastError() << endl;
@@ -139,13 +117,15 @@ void main()
 				return;
 			}
 
-			recvBuff[bytesRecv] = '\0';
-			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
+			recvBuff[bytesRecv] = '\0';*/
+			//cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
 		}
 		if (strcmp(selectedOption, "2") == 0)
 		{
 			strcpy(sendBuff, "GetTimeWithoutDate");
-			bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+			sendRequest(sendBuff, connSocket, server);
+			getResponse(connSocket, recvBuff);
+			/*bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 			if (SOCKET_ERROR == bytesSent)
 			{
 				cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
@@ -165,12 +145,14 @@ void main()
 			}
 
 			recvBuff[bytesRecv] = '\0';
-			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
+			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";*/
 		}
 		if (strcmp(selectedOption, "3") == 0)
 		{
 			strcpy(sendBuff, "GetTimeSinceEpoch");
-			bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+			sendRequest(sendBuff, connSocket, server);
+			getResponse(connSocket, recvBuff);
+			/*bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 			if (SOCKET_ERROR == bytesSent)
 			{
 				cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
@@ -190,7 +172,7 @@ void main()
 			}
 
 			recvBuff[bytesRecv] = '\0';
-			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
+			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";*/
 		}
 		if (strcmp(selectedOption, "4") == 0)
 		{
@@ -199,34 +181,36 @@ void main()
 			double response = 0;
 			strcpy(sendBuff, "GetClientToServerDelayEstimation");
 			for (int i = 0; i < 100; i++) {
-				bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+				/*bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 				if (SOCKET_ERROR == bytesSent)
-				{
-					cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
-					closesocket(connSocket);
-					WSACleanup();
-					return;
-				}
-				cout << "Time Client: Sent: " << bytesSent << "/" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";
+				{*/
+				sendRequest(sendBuff, connSocket, server);
+				//	cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
+				//	closesocket(connSocket);
+				//	WSACleanup();
+				//	return;
+				//}
+				//cout << "Time Client: Sent: " << bytesSent << "/" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";
 
 			}
 			for (int i = 0; i < 100; i++) {
-				bytesRecv = recv(connSocket, recvBuff, 255, 0);
+				/*bytesRecv = recv(connSocket, recvBuff, 255, 0);
 				if (SOCKET_ERROR == bytesRecv)
 				{
 					cout << "Time Client: Error at recv(): " << WSAGetLastError() << endl;
 					closesocket(connSocket);
 					WSACleanup();
 					return;
-				}
-				recvBuff[bytesRecv] = '\0';
+				}*/
+				getResponse(connSocket, recvBuff);
+				
 				if (i != 0) {
 					sum += (stoi(recvBuff)) - prevResponse;
 				}
 				prevResponse = stoi(recvBuff);
 			}
 			double avg = sum / 100;
-			cout <<"Time client : client to server delay estimation in msec: "<< avg << endl;
+			cout << "Time client : client to server delay estimation in msec: " << avg << endl;
 		}
 		if (strcmp(selectedOption, "5") == 0)
 		{
@@ -238,7 +222,7 @@ void main()
 			strcpy(sendBuff, "MeasureRTT");
 			for (int i = 0; i < 100; i++) {
 				startTime=GetTickCount();
-				bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+				/*bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 				if (SOCKET_ERROR == bytesSent)
 				{
 					cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
@@ -246,7 +230,8 @@ void main()
 					WSACleanup();
 					return;
 				}
-				cout << "Time Client: Sent: " << bytesSent << "/" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";
+				cout << "Time Client: Sent: " << bytesSent << "/" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";*/
+				/*sendRequest(sendBuff, connSocket, server);
 				bytesRecv = recv(connSocket, recvBuff, 255, 0);
 				endTime = GetTickCount();
 				if (SOCKET_ERROR == bytesRecv)
@@ -256,7 +241,10 @@ void main()
 					WSACleanup();
 					return;
 				}
-				recvBuff[bytesRecv] = '\0';
+				recvBuff[bytesRecv] = '\0';*/
+					sendRequest(sendBuff, connSocket, server);
+					getResponse(connSocket, recvBuff);
+					endTime = GetTickCount();
 				if (i != 0) {
 					sum += (stoi(recvBuff)) - prevResponse;
 				}
@@ -268,7 +256,7 @@ void main()
 		}
 		if (strcmp(selectedOption, "6") == 0)
 		{
-			strcpy(sendBuff, "GetTimeWithoutDateOrSeconds");
+			/*strcpy(sendBuff, "GetTimeWithoutDateOrSeconds");
 			bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 			if (SOCKET_ERROR == bytesSent)
 			{
@@ -277,9 +265,10 @@ void main()
 				WSACleanup();
 				return;
 			}
-			cout << "Time Client: Sent: " << bytesSent << "/" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";
-
-			bytesRecv = recv(connSocket, recvBuff, 255, 0);
+			cout << "Time Client: Sent: " << bytesSent << "/" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";*/
+			sendRequest(sendBuff, connSocket, server);
+			getResponse(connSocket, recvBuff);
+			/*bytesRecv = recv(connSocket, recvBuff, 255, 0);
 			if (SOCKET_ERROR == bytesRecv)
 			{
 				cout << "Time Client: Error at recv(): " << WSAGetLastError() << endl;
@@ -289,12 +278,12 @@ void main()
 			}
 
 			recvBuff[bytesRecv] = '\0';
-			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
+			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";*/
 		}
 		if (strcmp(selectedOption, "7") == 0)
 		{
 			strcpy(sendBuff, "GetYear");
-			bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+			/*bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 			if (SOCKET_ERROR == bytesSent)
 			{
 				cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
@@ -314,12 +303,14 @@ void main()
 			}
 
 			recvBuff[bytesRecv] = '\0';
-			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
+			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";*/
+			sendRequest(sendBuff, connSocket, server);
+			getResponse(connSocket, recvBuff);
 		}
 		if (strcmp(selectedOption, "8") == 0)
 		{
 			strcpy(sendBuff, "GetMonthAndDay");
-			bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+			/*bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 			if (SOCKET_ERROR == bytesSent)
 			{
 				cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
@@ -339,12 +330,14 @@ void main()
 			}
 
 			recvBuff[bytesRecv] = '\0';
-			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
+			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";*/
+			sendRequest(sendBuff, connSocket, server);
+			getResponse(connSocket, recvBuff);
 		}
 		if (strcmp(selectedOption, "9") == 0)
 		{
 			strcpy(sendBuff, "GetSecondsSinceBeginingOfMonth");
-			bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+			/*bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 			if (SOCKET_ERROR == bytesSent)
 			{
 				cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
@@ -364,12 +357,14 @@ void main()
 			}
 
 			recvBuff[bytesRecv] = '\0';
-			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
+			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";*/
+			sendRequest(sendBuff, connSocket, server);
+			getResponse(connSocket, recvBuff);
 		}
 		if (strcmp(selectedOption, "10") == 0)
 		{
 			strcpy(sendBuff, "GetWeekOfYear");
-			bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+			/*bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 			if (SOCKET_ERROR == bytesSent)
 			{
 				cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
@@ -389,12 +384,14 @@ void main()
 			}
 
 			recvBuff[bytesRecv] = '\0';
-			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
+			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";*/
+			sendRequest(sendBuff, connSocket, server);
+			getResponse(connSocket, recvBuff);
 		}
 		if (strcmp(selectedOption, "11") == 0)
 		{
 			strcpy(sendBuff, "GetDaylightSavings");
-			bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+			/*bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 			if (SOCKET_ERROR == bytesSent)
 			{
 				cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
@@ -414,7 +411,10 @@ void main()
 			}
 
 			recvBuff[bytesRecv] = '\0';
-			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
+			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";*/
+
+			sendRequest(sendBuff, connSocket, server);
+			getResponse(connSocket, recvBuff);
 		}
 
 		if (strcmp(selectedOption, "12") == 0)
@@ -425,7 +425,7 @@ void main()
 			cin >> userCityInput;
 			userInputCityMenu(selectedOption, userCityInput);
 			strcpy(sendBuff, selectedOption);
-			bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+			/*bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 			if (SOCKET_ERROR == bytesSent)
 			{
 				cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
@@ -446,11 +446,15 @@ void main()
 
 			recvBuff[bytesRecv] = '\0';
 			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
+			*/
+
+			sendRequest(sendBuff, connSocket, server);
+			getResponse(connSocket, recvBuff);
 		}
 			else if (strcmp(selectedOption, "13") == 0)
 			{
 				strcpy(sendBuff, "MeasureTimeLap");
-				bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+				/*bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 				if (SOCKET_ERROR == bytesSent)
 				{
 					cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
@@ -470,7 +474,9 @@ void main()
 				}
 
 				recvBuff[bytesRecv] = '\0';
-				cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
+				cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";*/
+				sendRequest(sendBuff, connSocket, server);
+				getResponse(connSocket, recvBuff);
 			}
 
 
@@ -527,4 +533,33 @@ void main()
 	closesocket(connSocket);
 
 	system("pause");
+}
+
+void sendRequest(char(&sendBuff)[255],const SOCKET& connSocket, const sockaddr_in& server) {
+	int bytesSent = 0;
+	//char sendBuff[255] = "";
+	bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+	if (SOCKET_ERROR == bytesSent)
+	{
+		cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
+		closesocket(connSocket);
+		WSACleanup();
+		return;
+	}
+	cout << "Time Client: Sent: " << bytesSent << "/" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";
+
+}
+void getResponse(const SOCKET& connSocket, char(&recvBuff)[255] ) {
+	int bytesRecv = 0;
+	bytesRecv = recv(connSocket, recvBuff, 255, 0);
+	if (SOCKET_ERROR == bytesRecv)
+	{
+		cout << "Time Client: Error at recv(): " << WSAGetLastError() << endl;
+		closesocket(connSocket);
+		WSACleanup();
+		return;
+	}
+	recvBuff[bytesRecv] = '\0';
+	cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
+
 }
