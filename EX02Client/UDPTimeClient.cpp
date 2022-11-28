@@ -13,7 +13,7 @@ void sendRequest(char(&sendBuff)[255],const SOCKET& connSocket, const sockaddr_i
 void getResponse(const SOCKET& connSocket, char(&recvBuff)[255]);
 void displayMenuOptions()
 {
-	cout << "Please select an option (to exit press 0)" << endl;
+	cout << "==================Menu================== " << endl;
 	cout << "1.  " << "Get time" << endl;
 	cout << "2.  " << "Get time Without date" << endl;
 	cout << "3.  " << "Get time since epoch" << endl;
@@ -27,6 +27,8 @@ void displayMenuOptions()
 	cout << "11. " << "Get day light savings" << endl;
 	cout << "12. " << "Get time without date in city" << endl;
 	cout << "13. " << "Measure time lap" << endl;
+    cout << "========================================== " << endl;
+	cout << "Please select an option (to exit press 0)" << endl;
 }
 void printCityMenu()
 {
@@ -100,19 +102,19 @@ void main()
 			sendRequest(sendBuff,connSocket, server);
 			getResponse(connSocket, recvBuff);
 		}
-		if (strcmp(selectedOption, "2") == 0)
+	else if (strcmp(selectedOption, "2") == 0)
 		{
 			strcpy(sendBuff, "GetTimeWithoutDate");
 			sendRequest(sendBuff, connSocket, server);
 			getResponse(connSocket, recvBuff);
 		}
-		if (strcmp(selectedOption, "3") == 0)
+	else if (strcmp(selectedOption, "3") == 0)
 		{
 			strcpy(sendBuff, "GetTimeSinceEpoch");
 			sendRequest(sendBuff, connSocket, server);
 			getResponse(connSocket, recvBuff);
 		}
-		if (strcmp(selectedOption, "4") == 0)
+	else if (strcmp(selectedOption, "4") == 0)
 		{
 			double sum = 0;
 			double prevResponse = 0;
@@ -129,10 +131,10 @@ void main()
 				}
 				prevResponse = stoi(recvBuff);
 			}
-			double avg = sum / 100;
+			double avg = sum / 99;
 			cout << "Time client : client to server delay estimation in msec: " << avg << endl;
 		}
-		if (strcmp(selectedOption, "5") == 0)
+	else if (strcmp(selectedOption, "5") == 0)
 		{
 			double sum = 0;
 			double prevResponse = 0;
@@ -141,8 +143,7 @@ void main()
 			unsigned int endTime = 0;
 			strcpy(sendBuff, "MeasureRTT");
 			for (int i = 0; i < 100; i++) {
-				startTime=GetTickCount();
-
+				    startTime=GetTickCount();
 					sendRequest(sendBuff, connSocket, server);
 					getResponse(connSocket, recvBuff);
 					endTime = GetTickCount();
@@ -155,42 +156,43 @@ void main()
 			cout << "Time client : client to server RTT measured in msec: " << avg << endl;
 			cout << "\nRTT Estimation in msec: " << avg << endl;
 		}
-		if (strcmp(selectedOption, "6") == 0)
+	else if (strcmp(selectedOption, "6") == 0)
 		{
+			strcpy(sendBuff, "GetTimeWithoutDateOrSeconds");
 			sendRequest(sendBuff, connSocket, server);
 			getResponse(connSocket, recvBuff);
 		}
-		if (strcmp(selectedOption, "7") == 0)
+	else if (strcmp(selectedOption, "7") == 0)
 		{
 			strcpy(sendBuff, "GetYear");
 			sendRequest(sendBuff, connSocket, server);
 			getResponse(connSocket, recvBuff);
 		}
-		if (strcmp(selectedOption, "8") == 0)
+	else if (strcmp(selectedOption, "8") == 0)
 		{
 			strcpy(sendBuff, "GetMonthAndDay");
 			sendRequest(sendBuff, connSocket, server);
 			getResponse(connSocket, recvBuff);
 		}
-		if (strcmp(selectedOption, "9") == 0)
+	else if (strcmp(selectedOption, "9") == 0)
 		{
 			strcpy(sendBuff, "GetSecondsSinceBeginingOfMonth");
 			sendRequest(sendBuff, connSocket, server);
 			getResponse(connSocket, recvBuff);
 		}
-		if (strcmp(selectedOption, "10") == 0)
+	else if (strcmp(selectedOption, "10") == 0)
 		{
 			strcpy(sendBuff, "GetWeekOfYear");
 			sendRequest(sendBuff, connSocket, server);
 			getResponse(connSocket, recvBuff);
 		}
-		if (strcmp(selectedOption, "11") == 0)
+	else if (strcmp(selectedOption, "11") == 0)
 		{
 			strcpy(sendBuff, "GetDaylightSavings");
 			sendRequest(sendBuff, connSocket, server);
 			getResponse(connSocket, recvBuff);
 		}
-		if (strcmp(selectedOption, "12") == 0)
+	else if (strcmp(selectedOption, "12") == 0)
 		{
 			char selectedOption[255] = "GetTimeWithoutDateInCity";
 			printCityMenu();
