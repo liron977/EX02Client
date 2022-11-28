@@ -37,9 +37,31 @@ void printCityMenu()
 	cout << "5. UTC" << endl;
 }
 void userInputCityMenu(char* outStr, int userCityInput) {
-	if (userCityInput == 1) { // Doha
-	   sprintf(outStr, "%s","GetTimeWithoutDateInCity1");
+	//if (userCityInput == 1) { // Doha
+	//   sprintf(outStr, "%s","GetTimeWithoutDateInCity1");
+	//}
+
+	switch (userCityInput)
+	{
+	case 1:
+		sprintf(outStr, "%s", "GetTimeWithoutDateInCity1");	
+		break;
+	case 2: // Prague
+	    sprintf(outStr, "%s", "GetTimeWithoutDateInCity2");
+		break;
+	case 3: // New York
+		sprintf(outStr, "%s", "GetTimeWithoutDateInCity3");
+		break;
+	case 4: // Berlin
+		sprintf(outStr, "%s", "GetTimeWithoutDateInCity4");
+			break;
+	case 5: // Universal
+		sprintf(outStr, "%s", "GetTimeWithoutDateInCity5");
+		break;
+	default:
+		break;
 	}
+
 }
 	//	break;
 	//case 2: // Prague
@@ -425,6 +447,31 @@ void main()
 			recvBuff[bytesRecv] = '\0';
 			cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
 		}
+			else if (strcmp(selectedOption, "13") == 0)
+			{
+				strcpy(sendBuff, "MeasureTimeLap");
+				bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
+				if (SOCKET_ERROR == bytesSent)
+				{
+					cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
+					closesocket(connSocket);
+					WSACleanup();
+					return;
+				}
+				cout << "Time Client: Sent: " << bytesSent << "/" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";
+
+				bytesRecv = recv(connSocket, recvBuff, 255, 0);
+				if (SOCKET_ERROR == bytesRecv)
+				{
+					cout << "Time Client: Error at recv(): " << WSAGetLastError() << endl;
+					closesocket(connSocket);
+					WSACleanup();
+					return;
+				}
+
+				recvBuff[bytesRecv] = '\0';
+				cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n";
+			}
 
 
 		displayMenuOptions();
