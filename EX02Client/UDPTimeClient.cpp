@@ -1,16 +1,5 @@
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#include <iostream>
-using namespace std;
-#pragma comment(lib, "Ws2_32.lib")
-#include <winsock2.h> 
-#include <string.h>
-#include <iostream>
-#include <string>
-#define TIME_PORT	27015
+#include "UDPTimeClient.h"
 
-void sendRequest(char(&sendBuff)[255],const SOCKET& connSocket, const sockaddr_in& server);
-void getResponse(const SOCKET& connSocket, char(&recvBuff)[255]);
 void displayMenuOptions()
 {
 	cout << "==================Menu================== " << endl;
@@ -57,7 +46,8 @@ void userInputCityMenu(char* outStr, int userCityInput) {
 	case 5: // Universal
 		sprintf(outStr, "%s", "GetTimeWithoutDateInCity5");
 		break;
-	default:
+	default://Illegal
+		sprintf(outStr, "%s", "Illegal");
 		break;
 	}
 
@@ -199,6 +189,11 @@ void main()
 			int userCityInput;
 			cin >> userCityInput;
 			userInputCityMenu(selectedOption, userCityInput);
+			while (!strcmp("Illegal", selectedOption)) {
+				cout << "Illegal,please select a valid option.\n";
+				cin >> userCityInput;
+				userInputCityMenu(selectedOption, userCityInput);
+			}
 			strcpy(sendBuff, selectedOption);
 			sendRequest(sendBuff, connSocket, server);
 			getResponse(connSocket, recvBuff);
@@ -230,7 +225,8 @@ void sendRequest(char(&sendBuff)[255],const SOCKET& connSocket, const sockaddr_i
 		cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
 		closesocket(connSocket);
 		WSACleanup();
-		return;
+		//return;
+		exit(0);
 	}
 	cout << "Time Client: Sent: " << bytesSent << "/" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";
 
@@ -243,7 +239,8 @@ void getResponse(const SOCKET& connSocket, char(&recvBuff)[255] ) {
 		cout << "Time Client: Error at recv(): " << WSAGetLastError() << endl;
 		closesocket(connSocket);
 		WSACleanup();
-		return;
+	//	return;
+		exit(0);
 	}
 	recvBuff[bytesRecv] = '\0';
 	cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n" << endl;
