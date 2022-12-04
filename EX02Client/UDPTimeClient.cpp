@@ -52,6 +52,65 @@ void userInputCityMenu(char* outStr, int userCityInput) {
 	}
 
 }
+void getResponseFromRequest(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& server, const SOCKET& connSocket) {
+	sendRequest(sendBuff, connSocket, server);
+	getResponse(connSocket, recvBuff);
+}
+void getClientToServerDelayEstimation(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& server, const SOCKET& connSocket) {
+	double sum = 0;
+	double prevResponse = 0;
+	double response = 0;
+	strcpy(sendBuff, "GetClientToServerDelayEstimation");
+	for (int i = 0; i < 100; i++) {
+		sendRequest(sendBuff, connSocket, server);
+	}
+	for (int i = 0; i < 100; i++) {
+		getResponse(connSocket, recvBuff);
+
+		if (i != 0) {
+			sum += (stoi(recvBuff)) - prevResponse;
+		}
+		prevResponse = stoi(recvBuff);
+	}
+	double avg = sum / 99;
+	cout << "Time client : client to server delay estimation in msec: " << avg << endl;
+}
+void measureRTT(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& server, const SOCKET& connSocket) {
+	double sum = 0;
+	double prevResponse = 0;
+	double response = 0;
+	unsigned int startTime = 0;
+	unsigned int endTime = 0;
+	strcpy(sendBuff, "MeasureRTT");
+	for (int i = 0; i < 100; i++) {
+		startTime = GetTickCount();
+		sendRequest(sendBuff, connSocket, server);
+		getResponse(connSocket, recvBuff);
+		endTime = GetTickCount();
+		if (i != 0) {
+			sum += (stoi(recvBuff)) - prevResponse;
+		}
+		prevResponse = stoi(recvBuff);
+	}
+	double avg = sum / 100;
+	cout << "Time client : client to server RTT measured in msec: " << avg << endl;
+	cout << "\nRTT Estimation in msec: " << avg << endl; 
+}
+void getTimeWithoutDateInCity(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& server, const SOCKET& connSocket) {
+	char selectedOption[255] = "GetTimeWithoutDateInCity";
+	printCityMenu();
+	int userCityInput;
+	cin >> userCityInput;
+	userInputCityMenu(selectedOption, userCityInput);
+	while (!strcmp("Illegal", selectedOption)) {
+		cout << "Illegal,please select a valid option.\n";
+		cin >> userCityInput;
+		userInputCityMenu(selectedOption, userCityInput);
+	}
+	strcpy(sendBuff, selectedOption);
+	sendRequest(sendBuff, connSocket, server);
+	getResponse(connSocket, recvBuff);
+}
 void main()
 {
 	WSAData wsaData;
@@ -86,123 +145,55 @@ void main()
 	displayMenuOptions();
 	cin >> selectedOption;
 	while (strcmp(selectedOption, "0") != 0){
-		if (strcmp(selectedOption, "1") == 0)
-		{
+
+		if (strcmp(selectedOption, "1") == 0)		{
 			strcpy(sendBuff, "GET_TIME");
-			sendRequest(sendBuff,connSocket, server);
-			getResponse(connSocket, recvBuff);
+			getResponseFromRequest(sendBuff,recvBuff, server, connSocket);
 		}
-	else if (strcmp(selectedOption, "2") == 0)
-		{
+	    else if (strcmp(selectedOption, "2") == 0){
 			strcpy(sendBuff, "GetTimeWithoutDate");
-			sendRequest(sendBuff, connSocket, server);
-			getResponse(connSocket, recvBuff);
+			getResponseFromRequest(sendBuff, recvBuff, server, connSocket);
 		}
-	else if (strcmp(selectedOption, "3") == 0)
-		{
+	    else if (strcmp(selectedOption, "3") == 0){
 			strcpy(sendBuff, "GetTimeSinceEpoch");
-			sendRequest(sendBuff, connSocket, server);
-			getResponse(connSocket, recvBuff);
+			getResponseFromRequest(sendBuff, recvBuff, server, connSocket);
 		}
-	else if (strcmp(selectedOption, "4") == 0)
-		{
-			double sum = 0;
-			double prevResponse = 0;
-			double response = 0;
-			strcpy(sendBuff, "GetClientToServerDelayEstimation");
-			for (int i = 0; i < 100; i++) {
-				sendRequest(sendBuff, connSocket, server);
-			}
-			for (int i = 0; i < 100; i++) {
-				getResponse(connSocket, recvBuff);
-				
-				if (i != 0) {
-					sum += (stoi(recvBuff)) - prevResponse;
-				}
-				prevResponse = stoi(recvBuff);
-			}
-			double avg = sum / 99;
-			cout << "Time client : client to server delay estimation in msec: " << avg << endl;
+	    else if (strcmp(selectedOption, "4") == 0){
+			getClientToServerDelayEstimation(sendBuff, recvBuff, server, connSocket);		
 		}
-	else if (strcmp(selectedOption, "5") == 0)
-		{
-			double sum = 0;
-			double prevResponse = 0;
-			double response = 0;
-			unsigned int startTime = 0;
-			unsigned int endTime = 0;
-			strcpy(sendBuff, "MeasureRTT");
-			for (int i = 0; i < 100; i++) {
-				    startTime=GetTickCount();
-					sendRequest(sendBuff, connSocket, server);
-					getResponse(connSocket, recvBuff);
-					endTime = GetTickCount();
-				if (i != 0) {
-					sum += (stoi(recvBuff)) - prevResponse;
-				}
-				prevResponse = stoi(recvBuff);
-			}
-			double avg = sum / 100;
-			cout << "Time client : client to server RTT measured in msec: " << avg << endl;
-			cout << "\nRTT Estimation in msec: " << avg << endl;
+	    else if (strcmp(selectedOption, "5") == 0){
+			measureRTT(sendBuff, recvBuff, server, connSocket);
 		}
-	else if (strcmp(selectedOption, "6") == 0)
-		{
+	    else if (strcmp(selectedOption, "6") == 0){
 			strcpy(sendBuff, "GetTimeWithoutDateOrSeconds");
-			sendRequest(sendBuff, connSocket, server);
-			getResponse(connSocket, recvBuff);
+			getResponseFromRequest(sendBuff, recvBuff, server, connSocket);
 		}
-	else if (strcmp(selectedOption, "7") == 0)
-		{
+	    else if (strcmp(selectedOption, "7") == 0){
 			strcpy(sendBuff, "GetYear");
-			sendRequest(sendBuff, connSocket, server);
-			getResponse(connSocket, recvBuff);
+			getResponseFromRequest(sendBuff, recvBuff, server, connSocket);
 		}
-	else if (strcmp(selectedOption, "8") == 0)
-		{
+	    else if (strcmp(selectedOption, "8") == 0){
 			strcpy(sendBuff, "GetMonthAndDay");
-			sendRequest(sendBuff, connSocket, server);
-			getResponse(connSocket, recvBuff);
+			getResponseFromRequest(sendBuff, recvBuff, server, connSocket);
 		}
-	else if (strcmp(selectedOption, "9") == 0)
-		{
+	    else if (strcmp(selectedOption, "9") == 0){
 			strcpy(sendBuff, "GetSecondsSinceBeginingOfMonth");
-			sendRequest(sendBuff, connSocket, server);
-			getResponse(connSocket, recvBuff);
+			getResponseFromRequest(sendBuff, recvBuff, server, connSocket);
 		}
-	else if (strcmp(selectedOption, "10") == 0)
-		{
+	    else if (strcmp(selectedOption, "10") == 0){
 			strcpy(sendBuff, "GetWeekOfYear");
-			sendRequest(sendBuff, connSocket, server);
-			getResponse(connSocket, recvBuff);
+			getResponseFromRequest(sendBuff, recvBuff, server, connSocket);
 		}
-	else if (strcmp(selectedOption, "11") == 0)
-		{
+	    else if (strcmp(selectedOption, "11") == 0){
 			strcpy(sendBuff, "GetDaylightSavings");
-			sendRequest(sendBuff, connSocket, server);
-			getResponse(connSocket, recvBuff);
+			getResponseFromRequest(sendBuff, recvBuff, server, connSocket);
 		}
-	else if (strcmp(selectedOption, "12") == 0)
-		{
-			char selectedOption[255] = "GetTimeWithoutDateInCity";
-			printCityMenu();
-			int userCityInput;
-			cin >> userCityInput;
-			userInputCityMenu(selectedOption, userCityInput);
-			while (!strcmp("Illegal", selectedOption)) {
-				cout << "Illegal,please select a valid option.\n";
-				cin >> userCityInput;
-				userInputCityMenu(selectedOption, userCityInput);
-			}
-			strcpy(sendBuff, selectedOption);
-			sendRequest(sendBuff, connSocket, server);
-			getResponse(connSocket, recvBuff);
+	    else if (strcmp(selectedOption, "12") == 0){
+		getTimeWithoutDateInCity(sendBuff, recvBuff, server, connSocket);
 		}
-		else if (strcmp(selectedOption, "13") == 0)
-		{
+		else if (strcmp(selectedOption, "13") == 0){
 				strcpy(sendBuff, "MeasureTimeLap");
-				sendRequest(sendBuff, connSocket, server);
-				getResponse(connSocket, recvBuff);
+				getResponseFromRequest(sendBuff, recvBuff, server, connSocket);
 		}
 		else {
 			cout << "Select an valid option.\n";
@@ -218,14 +209,12 @@ void main()
 
 void sendRequest(char(&sendBuff)[255],const SOCKET& connSocket, const sockaddr_in& server) {
 	int bytesSent = 0;
-	//char sendBuff[255] = "";
 	bytesSent = sendto(connSocket, sendBuff, (int)strlen(sendBuff), 0, (const sockaddr*)&server, sizeof(server));
 	if (SOCKET_ERROR == bytesSent)
 	{
 		cout << "Time Client: Error at sendto(): " << WSAGetLastError() << endl;
 		closesocket(connSocket);
 		WSACleanup();
-		//return;
 		exit(0);
 	}
 	cout << "Time Client: Sent: " << bytesSent << "/" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";
@@ -239,7 +228,6 @@ void getResponse(const SOCKET& connSocket, char(&recvBuff)[255] ) {
 		cout << "Time Client: Error at recv(): " << WSAGetLastError() << endl;
 		closesocket(connSocket);
 		WSACleanup();
-	//	return;
 		exit(0);
 	}
 	recvBuff[bytesRecv] = '\0';

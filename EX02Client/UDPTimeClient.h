@@ -11,3 +11,7 @@ using namespace std;
 
 void sendRequest(char(&sendBuff)[255], const SOCKET& connSocket, const sockaddr_in& server);
 void getResponse(const SOCKET& connSocket, char(&recvBuff)[255]);
+void getResponseFromRequest(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& server, const SOCKET& connSocket);
+void getClientToServerDelayEstimation(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& server, const SOCKET& connSocket);
+void measureRTT(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& server, const SOCKET& connSocket);
+void getTimeWithoutDateInCity(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& server, const SOCKET& connSocket);
