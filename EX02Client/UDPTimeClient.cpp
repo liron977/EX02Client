@@ -54,7 +54,7 @@ void userInputCityMenu(char* outStr, int userCityInput) {
 }
 void getResponseFromRequest(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& server, const SOCKET& connSocket) {
 	sendRequest(sendBuff, connSocket, server);
-	getResponse(connSocket, recvBuff);
+	getResponse(connSocket, recvBuff, true);
 }
 void getClientToServerDelayEstimation(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& server, const SOCKET& connSocket) {
 	double sum = 0;
@@ -65,7 +65,7 @@ void getClientToServerDelayEstimation(char(&sendBuff)[255], char(&recvBuff)[255]
 		sendRequest(sendBuff, connSocket, server);
 	}
 	for (int i = 0; i < 100; i++) {
-		getResponse(connSocket, recvBuff);
+		getResponse(connSocket, recvBuff,false);
 
 		if (i != 0) {
 			sum += (stoi(recvBuff)) - prevResponse;
@@ -77,22 +77,18 @@ void getClientToServerDelayEstimation(char(&sendBuff)[255], char(&recvBuff)[255]
 }
 void measureRTT(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& server, const SOCKET& connSocket) {
 	double sum = 0;
-	double prevResponse = 0;
-	double response = 0;
 	unsigned int startTime = 0;
 	unsigned int endTime = 0;
+	double avg = 0;
 	strcpy(sendBuff, "MeasureRTT");
 	for (int i = 0; i < 100; i++) {
 		startTime = GetTickCount();
 		sendRequest(sendBuff, connSocket, server);
-		getResponse(connSocket, recvBuff);
+		getResponse(connSocket, recvBuff,false);
 		endTime = GetTickCount();
-		if (i != 0) {
-			sum += (stoi(recvBuff)) - prevResponse;
-		}
-		prevResponse = stoi(recvBuff);
+		sum += endTime-startTime;
 	}
-	double avg = sum / 100;
+    avg = sum / 100;
 	cout << "Time client : client to server RTT measured in msec: " << avg << endl;
 	cout << "\nRTT Estimation in msec: " << avg << endl; 
 }
@@ -109,7 +105,7 @@ void getTimeWithoutDateInCity(char(&sendBuff)[255], char(&recvBuff)[255], const 
 	}
 	strcpy(sendBuff, selectedOption);
 	sendRequest(sendBuff, connSocket, server);
-	getResponse(connSocket, recvBuff);
+	getResponse(connSocket, recvBuff,true);
 }
 void main()
 {
@@ -141,6 +137,7 @@ void main()
 	char recvBuff[255];
 	char selectedOption[255];
 	char sendBuff[255]="";
+	
 
 	displayMenuOptions();
 	cin >> selectedOption;
@@ -217,10 +214,12 @@ void sendRequest(char(&sendBuff)[255],const SOCKET& connSocket, const sockaddr_i
 		WSACleanup();
 		exit(0);
 	}
+		
+	if((strcmp(sendBuff, "MeasureRTT")!=0)&&(strcmp(sendBuff, "GetClientToServerDelayEstimation")!=0)){
 	cout << "Time Client: Sent: " << bytesSent << "/" << strlen(sendBuff) << " bytes of \"" << sendBuff << "\" message.\n";
-
+	}
 }
-void getResponse(const SOCKET& connSocket, char(&recvBuff)[255] ) {
+void getResponse(const SOCKET& connSocket, char(&recvBuff)[255], bool isResponesShouldBePrint) {
 	int bytesRecv = 0;
 	bytesRecv = recv(connSocket, recvBuff, 255, 0);
 	if (SOCKET_ERROR == bytesRecv)
@@ -231,6 +230,7 @@ void getResponse(const SOCKET& connSocket, char(&recvBuff)[255] ) {
 		exit(0);
 	}
 	recvBuff[bytesRecv] = '\0';
-	cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n" << endl;
-
+	if (isResponesShouldBePrint) {
+		cout << "Time Client: Recieved: " << bytesRecv << " bytes of \"" << recvBuff << "\" message.\n" << endl;
+	}
 }
