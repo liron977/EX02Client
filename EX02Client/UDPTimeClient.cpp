@@ -28,28 +28,26 @@ void printCityMenu()
 	cout << "4. Berlin" << endl;
 	cout << "5. UTC" << endl;
 }
-void userInputCityMenu(char* outStr, int userCityInput) {
-	switch (userCityInput)
-	{
-	case 1:
-		sprintf(outStr, "%s", "GetTimeWithoutDateInCity1");	
-		break;
-	case 2: // Prague
-	    sprintf(outStr, "%s", "GetTimeWithoutDateInCity2");
-		break;
-	case 3: // New York
-		sprintf(outStr, "%s", "GetTimeWithoutDateInCity3");
-		break;
-	case 4: // Berlin
-		sprintf(outStr, "%s", "GetTimeWithoutDateInCity4");
-			break;
-	case 5: // Universal
-		sprintf(outStr, "%s", "GetTimeWithoutDateInCity5");
-		break;
-	default://Illegal
-		sprintf(outStr, "%s", "Illegal");
-		break;
-	}
+void userInputCityMenu(char* outStr, char userCityInput[255]) {
+
+		if (strcmp(userCityInput, "1") == 0) {
+			sprintf(outStr, "%s", "GetTimeWithoutDateInCity1");
+		}
+		else if (strcmp(userCityInput, "2") == 0) { // Prague
+			sprintf(outStr, "%s", "GetTimeWithoutDateInCity2");
+		}
+		else if (strcmp(userCityInput, "3") == 0) {// New York
+			sprintf(outStr, "%s", "GetTimeWithoutDateInCity3");
+		}
+		else if (strcmp(userCityInput, "4") == 0) {// Berlin
+			sprintf(outStr, "%s", "GetTimeWithoutDateInCity4");
+		}
+		else if (strcmp(userCityInput, "5") == 0) {// Universal
+			sprintf(outStr, "%s", "GetTimeWithoutDateInCity5");
+		}
+		else{ //Illegal
+			sprintf(outStr, "%s", "Illegal");
+		}
 
 }
 void getResponseFromRequest(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& server, const SOCKET& connSocket) {
@@ -66,11 +64,11 @@ void getClientToServerDelayEstimation(char(&sendBuff)[255], char(&recvBuff)[255]
 	}
 	for (int i = 0; i < 100; i++) {
 		getResponse(connSocket, recvBuff,false);
-
+		sscanf_s(recvBuff, "%lf", &response);
 		if (i != 0) {
-			sum += (stoi(recvBuff)) - prevResponse;
+			sum += response - prevResponse;
 		}
-		prevResponse = stoi(recvBuff);
+		prevResponse = response;
 	}
 	double avg = sum / 99;
 	cout << "Time client : client to server delay estimation in msec: " << avg << endl;
@@ -90,12 +88,12 @@ void measureRTT(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& s
 	}
     avg = sum / 100;
 	cout << "Time client : client to server RTT measured in msec: " << avg << endl;
-	cout << "\nRTT Estimation in msec: " << avg << endl; 
+
 }
 void getTimeWithoutDateInCity(char(&sendBuff)[255], char(&recvBuff)[255], const sockaddr_in& server, const SOCKET& connSocket) {
 	char selectedOption[255] = "GetTimeWithoutDateInCity";
 	printCityMenu();
-	int userCityInput;
+	char userCityInput[255];
 	cin >> userCityInput;
 	userInputCityMenu(selectedOption, userCityInput);
 	while (!strcmp("Illegal", selectedOption)) {
